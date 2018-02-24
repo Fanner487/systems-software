@@ -37,12 +37,12 @@ int main(void){
 
 		fp = popen("ls -lah", "r");
 
-		char string[4096];
+		char * string;
 
 		while(fgets(path, 4096, fp) != NULL){
-			printf("%s", path);
+			// printf("%s", path);
 
-			// string = strcat(string, path);
+			strcat(string, path);
 			
 		}
 
