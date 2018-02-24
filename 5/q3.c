@@ -38,12 +38,17 @@ int main(void){
 		fp = popen("ls -lah", "r");
 
 		char * string;
+		char c;
 
-		while(fgets(path, 4096, fp) != NULL){
-			// printf("%s", path);
+		// while(fgets(path, 4096, fp) != NULL){
+		// 	// printf("%s", path);
 
-			strcat(string, path);
+		// 	strcat(string, path);
 			
+		// }
+
+		while((c = getc(fp)) != EOF){
+			putchar(c);
 		}
 
 		status = pclose(fp);
