@@ -48,7 +48,7 @@ int main(void){
 		// }
 
 		while((c = getc(fp)) != EOF){
-			printf("%c\n", c);
+			printf("%c", c);
 			// strcat(string, c);
 		}
 
