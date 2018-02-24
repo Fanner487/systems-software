@@ -38,7 +38,7 @@ int main(void){
 		fp = popen("ls -lah", "r");
 
 		char string[4096];
-		char c;
+		char * c;
 
 		// while(fgets(path, 4096, fp) != NULL){
 		// 	// printf("%s", path);
