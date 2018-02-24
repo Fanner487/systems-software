@@ -13,7 +13,7 @@ int main(int argc, char **argv){
 
 
 	char *argumentscp[] = {"mv", "-v", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/intranet/*", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/", 0};
-	execvp("/bin/cp", argumentscp);
+	execvp("/bin/mv", argumentscp);
 
 	// execl("/bin/cp", "-r", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup", 0);
 
