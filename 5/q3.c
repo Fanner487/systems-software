@@ -40,6 +40,26 @@ int main(void){
 		char string[4096];
 		char c;
 
+		char * buffer = 0;
+		long length;
+
+		if(fp){
+			fseek(f, 0, SEEK_END);
+			length = ftell(fp);
+			fseek(fp, 0, SEEK_SET);
+			buffer = malloc(length);
+
+			if(buffer){
+				fread(buffer, 1, length, fp);
+			}
+
+			fclose(fp);
+		}
+
+		if(buffer){
+			printf("%s", buffer);
+		}
+
 		// while(fgets(path, 4096, fp) != NULL){
 		// 	// printf("%s", path);
 
@@ -47,15 +67,15 @@ int main(void){
 			
 		// }
 
-		while((c = getc(fp)) != EOF){
-			printf("%c", c);
-			// strcat(string, c);
-		}
+		// while((c = getc(fp)) != EOF){
+		// 	printf("%c", c);
+		// 	// strcat(string, c);
+		// }
 
 		status = pclose(fp);
 		// printf("%s", string);
 // 
-		write(fd[1], string, strlen(string) + 1);
+		// write(fd[1], string, strlen(string) + 1);
 		
 		exit(0);
 	}
