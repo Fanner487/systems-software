@@ -44,7 +44,7 @@ int main(void){
 		long length;
 
 		if(fp){
-			fseek(f, 0, SEEK_END);
+			fseek(fp, 0, SEEK_END);
 			length = ftell(fp);
 			fseek(fp, 0, SEEK_SET);
 			buffer = malloc(length);
