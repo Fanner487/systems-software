@@ -42,7 +42,7 @@ int main(void){
 		while(fgets(path, 4096, fp) != NULL){
 			printf("%s", path);
 
-			string = strcat(string, path);
+			// string = strcat(string, path);
 			
 		}
 
