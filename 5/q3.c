@@ -35,7 +35,7 @@ int main(void){
 
 		close(fd[0]);
 
-		fp = popen("ls -lah", "r");
+		fp = popen("diff 1 2", "r");
 
 		char string[4096];
 		char c;
@@ -43,9 +43,7 @@ int main(void){
 		char * buffer;
 		long length;
 
-		fread(buffer, 1, 4096, fp);
 
-		
 
 		// if(fp){
 		// 	fseek(fp, 0, SEEK_END);
@@ -71,10 +69,10 @@ int main(void){
 			
 		// }
 
-		// while((c = getc(fp)) != EOF){
-		// 	printf("%c", c);
-		// 	// strcat(string, c);
-		// }
+		while((c = getc(fp)) != EOF){
+			printf("%c", c);
+			// strcat(string, c);
+		}
 
 		status = pclose(fp);
 		// printf("%s", string);
