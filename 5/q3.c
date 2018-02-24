@@ -43,6 +43,10 @@ int main(void){
 		char * buffer;
 		long length;
 
+		FILE *outputFile;
+		outputFile = fopen("newLog.txt", "a+");
+
+
 
 
 		// if(fp){
@@ -71,10 +75,12 @@ int main(void){
 
 		while((c = getc(fp)) != EOF){
 			printf("%c", c);
+			fputc(c, outputFile);
 			// strcat(string, c);
 		}
 
 		status = pclose(fp);
+		fclose(outputFile);
 		// printf("%s", string);
 // 
 		write(fd[1], string, strlen(string) + 1);
