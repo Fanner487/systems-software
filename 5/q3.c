@@ -48,13 +48,13 @@ int main(void){
 		// }
 
 		while((c = getc(fp)) != EOF){
-			putchar(c);
+			strcat(string, c);
 		}
 
 		status = pclose(fp);
 		// printf("%d", status);
 
-		write(fd[1], string, strlen(path) + 1);
+		write(fd[1], string, strlen(string) + 1);
 		
 		exit(0);
 	}
