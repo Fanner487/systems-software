@@ -15,11 +15,11 @@ int main(int argc, char **argv){
 	execvp("rsync", arguments);
 
 
-	char *argumentscp[] = {"cp", "-r", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/intranet/*", "..", 0};
-	execvp("/bin/cp", argumentscp);
+	// char *argumentscp[] = {"mv", "-v", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/intranet/*", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/", 0};
+	// execvp("/bin/cp", argumentscp);
 
-	char *argumentsrm[] = {"rm", "-rf", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/intranet/", 0};
-	execvp("/bin/rm", argumentsrm);
+	// char *argumentsrm[] = {"rm", "-rf", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/intranet/", 0};
+	// execvp("/bin/rm", argumentsrm);
 
 	// execl("/bin/cp", "-r", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup", 0);
 
