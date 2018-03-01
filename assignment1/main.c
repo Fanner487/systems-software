@@ -45,7 +45,13 @@ void main (int argc, char **argv) {
 
 		// syncFiles();
 		backup();
-		syncFiles();
+		// syncFiles();
+
+		char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
+		char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/";
+		// char *command = "rsync -vr /home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/ /home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/";
+
+		execlp("rsync", "rsync", "-vr", source, destination, NULL);
 	}
 
 }
