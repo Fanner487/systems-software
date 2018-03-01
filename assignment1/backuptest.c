@@ -14,9 +14,12 @@ int main(int argc, char **argv){
 	// char *arguments[] = {"cp", "-r", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup", 0};
 	// execvp("/bin/cp", arguments);
 
-	execlp("cp", "cp", "-r", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup", NULL);
+	char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet";
+	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet";
 
-	// execl("/bin/cp", "-r", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup", 0);
+
+	execlp("cp", "cp", "-r", source, destination, NULL);
+
 
 	printf("Should not be here");
 
