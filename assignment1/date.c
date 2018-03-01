@@ -2,7 +2,7 @@
 #include <time.h>
 
 char* getCurrentDate(char * buffer){
-
+	printf("\nIn getCurrentDate");
 	time_t rawTime;
 	struct tm * timeinfo;
 	time (&rawTime);
