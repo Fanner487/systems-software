@@ -6,7 +6,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "syncfiles.h"
+
 
 void syncFiles(){
 

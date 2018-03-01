@@ -8,7 +8,7 @@ myprog: $(objects)
 main.o: main.c $(headers)
 	$(CC) -c -Wall main.c
 
-backup.o: backup.c $(headers)
+backup.o: backup.c
 	$(CC) -c -Wall backup.c
 
 date.o: date.c
@@ -16,6 +16,6 @@ date.o: date.c
 
 syncfiles.o: syncfiles.c
 	$(CC) -c -Wall syncfiles.c
-	
+
 clean:
 	rm program $(objects)
