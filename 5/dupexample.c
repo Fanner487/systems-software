@@ -10,11 +10,16 @@ void exec2();
 int pid;
 int pipefd[2];
 
-int main(void){
+void main(){
 	
 	printf("main");
 	if(pipe(pipefd) == -1){
 		perror("Error init pipe");
+		exit(1);
+	}
+
+	if((pid = fork()) == -1){
+		perror("Error Init Pipe");
 		exit(1);
 	}
 	else{
