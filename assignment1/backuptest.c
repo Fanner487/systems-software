@@ -20,7 +20,7 @@ int main(int argc, char **argv){
 	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup";
 
 	char dateBuffer[80];
-	char *date = getCurrentDate();
+	char *date = getCurrentDate(dateBuffer);
 
 	int newSize = strlen(destination) + strlen(date) + 1;
 	char *destinationWithDate = (char *)malloc(newSize);

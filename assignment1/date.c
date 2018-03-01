@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <time.h>
 
-char* getCurrentDate(){
+char* getCurrentDate(char * buffer){
 
-	char buffer[80];
 	time_t rawTime;
 	struct tm * timeinfo;
 	time (&rawTime);
