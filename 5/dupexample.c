@@ -22,7 +22,7 @@ void main(){
 		perror("Error Init Pipe");
 		exit(1);
 	}
-	else{
+	else if(pid == 0){
 		printf("Calling exec1");
 		exec1();
 	}
