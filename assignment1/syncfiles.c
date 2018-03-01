@@ -13,6 +13,4 @@ void syncFiles(){
 	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/";
 
 	execlp("rsync", "rsync", "-vr", source, destination, NULL);
-
-	return 0;
 }
