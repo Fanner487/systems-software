@@ -6,6 +6,8 @@
 #include <math.h>
 #include <string.h>
 
+#include "date.h"
+
 
 int main(int argc, char **argv){
 
@@ -17,8 +19,18 @@ int main(int argc, char **argv){
 	char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet";
 	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup";
 
+	char dateBuffer[80];
+	char *date = getCurrentDate(dateBuffer);
 
-	execlp("cp", "cp", "-r", source, destination, NULL);
+	int newSize = strlen(destination) + strlen(date) + 1;
+	char *destinationWithDate = (char *)mallic(newSize);
+
+	strcpy(destinationWithDate, destination);
+	strcat(destinationWithDate, date);
+
+
+
+	execlp("cp", "cp", "-r", source, destinationWithDate, NULL);
 
 
 	printf("Should not be here");
