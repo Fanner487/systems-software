@@ -1,6 +1,6 @@
 #ifndef DATE_H
 #define DATE_H
 
-char* getCurrentDate(char * buffer);
+char* getCurrentDate();
 
 #endif // DATE_H
