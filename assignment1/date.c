@@ -1,15 +1,13 @@
 #include <stdio.h>
 #include <time.h>
 
-char* getCurrentDate(){
+char* getCurrentDate(char * buffer){
 	printf("\nIn getCurrentDate");
-
-	char buffer[80];
 	time_t rawTime;
 	struct tm * timeinfo;
 	time (&rawTime);
 	timeinfo = localtime(&rawTime);
-	strftime(buffer, 80, "%d_%m_%Y", timeinfo);
+	strftime(buffer, 80, "%d_%m_%Y_%H_%M_%S", timeinfo);
 
 	printf("\nTime: %s", buffer);
 

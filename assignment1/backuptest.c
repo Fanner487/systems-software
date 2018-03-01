@@ -21,8 +21,8 @@ int main(int argc, char **argv){
 	char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
 	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup/";
 
-	// char dateBuffer[80];
-	char *date = getCurrentDate();
+	char dateBuffer[80];
+	char *date = getCurrentDate(dateBuffer);
 
 	printf("\nDate: %s", date);
 
