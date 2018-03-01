@@ -1,6 +1,6 @@
 CC=gcc -g 
-objects=main.o backup.o date.o syncfiles.o
-headers=backup.h date.h syncfiles.h
+objects=main.o backup.o date.o syncfiles.o permissions.o
+headers=backup.h date.h syncfiles.h permissions.h
 
 myprog: $(objects)
 	$(CC) -o daemon_process $(objects) -lm
@@ -16,6 +16,9 @@ backup.o: backup.c
 
 date.o: date.c
 	$(CC) -c -Wall date.c
+
+permissions.o: permissions.c
+	$(CC) -c -Wall permissions.c
 
 clean:
 	rm program $(objects)

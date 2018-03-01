@@ -10,6 +10,7 @@
 
 #include "backup.h"
 #include "syncfiles.h"
+#include "permissions.h"
 
 void main (int argc, char **argv) {
   printf("\nProgram is running.");
@@ -43,8 +44,10 @@ void main (int argc, char **argv) {
 			close(x);
 		}
 
+		setFilePermissions("1111");
 		backup();
 		syncFiles();
+		setFilePermissions("0777");
 		// backup();
 
 		// char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
