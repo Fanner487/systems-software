@@ -26,8 +26,9 @@ void syncFiles(){
 	fp = popen(command,"r");
 	outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/something.txt")
 
-	while(fgets(readbuffer, 1024,fp) != NULL)
+	while(fgets(readbuffer, 1024,fp) != NULL){
 		fprintf(outputFile, readbuffer);
+	}
 
 	status = pclose(fp);
 }
