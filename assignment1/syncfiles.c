@@ -24,11 +24,12 @@ void syncFiles(){
 	char readbuffer[1024];
 
 	fp = popen(command,"r");
-	outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/nigger.txt/", "a+");
+	outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/synclog.txt", "a+");
 
 	while(fgets(readbuffer, 1024,fp) != NULL){
 		fprintf(outputFile, "%s", readbuffer);
 	}
 
 	status = pclose(fp);
+	pclose(outputFile);
 }
