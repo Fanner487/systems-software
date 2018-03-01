@@ -15,7 +15,7 @@ int main(int argc, char **argv){
 	// execvp("/bin/cp", arguments);
 
 	char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet";
-	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet";
+	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup";
 
 
 	execlp("cp", "cp", "-r", source, destination, NULL);
