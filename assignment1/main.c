@@ -47,7 +47,7 @@ void main (int argc, char **argv) {
 		setFilePermissions("1111");
 		backup();
 		syncFiles();
-		setFilePermissions("0777");
+		// setFilePermissions("0777");
 		// backup();
 
 		// char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
