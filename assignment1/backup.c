@@ -9,14 +9,9 @@
 #include "date.h"
 
 
-int main(int argc, char **argv){
+void backup(){
 
-	// char *command = argv[1];
-	// printf("\n%s\n", command);
-	// char *arguments[] = {"cp", "-r", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet", "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup", 0};
-	// execvp("/bin/cp", arguments);
-
-	printf("\nHello world");
+	printf("\nIn backup\n");
 
 	char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
 	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup/";
@@ -32,10 +27,7 @@ int main(int argc, char **argv){
 	strcpy(destinationWithDate, destination);
 	strcat(destinationWithDate, date);
 
-
-
 	execlp("cp", "cp", "-r", source, destinationWithDate, NULL);
-
 
 	printf("Should not be here");
 
