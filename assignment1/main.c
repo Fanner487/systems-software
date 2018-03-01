@@ -43,7 +43,7 @@ void main (int argc, char **argv) {
 			close(x);
 		}
 
-		syncFiles();
+		// syncFiles();
 		backup();
 		// syncFiles();
 	}
