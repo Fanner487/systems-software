@@ -11,51 +11,16 @@
 
 void syncFiles(){
 
-	// char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
-	// char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/";
-	// char *command = "rsync -r /home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/ /home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/";
+	char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
+	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/";
+	char *command = "rsync -r /home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/ /home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/";
 
 	// execlp("rsync", "rsync", "-vr", source, destination, NULL);
 
-	// system(command);
+	system(command);
 
 
-	// FILE *fp;
-	// FILE *outputFile;
-	// int status;
-	// char string[] = "Wasssuppp mate!\n";
-	// char readbuffer[1024];
 
-	// fp = popen(command,"r");
-	// outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/synclog.txt", "a+");
-
-	// while(fgets(readbuffer, 1024,fp) != NULL){
-	// 	fprintf(outputFile, "%s", readbuffer);
-	// }
-
-	// status = pclose(fp);
-	// pclose(outputFile);
-
-
-	printf("\nIn backup\n");
-
-	char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
-	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup/";
-
-	char dateBuffer[80];
-	char *date = getCurrentDate(dateBuffer);
-
-	printf("\nDate: %s", date);
-
-	int newSize = strlen(destination) + strlen(date) + 1;
-	char *destinationWithDate = (char *)malloc(newSize);
-
-	strcpy(destinationWithDate, destination);
-	strcat(destinationWithDate, date);
-
-	execlp("cp", "cp", "-r", source, destinationWithDate, NULL);
-
-	printf("Should not be here");
 }
 
 

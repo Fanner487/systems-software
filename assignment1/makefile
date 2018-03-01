@@ -8,14 +8,14 @@ myprog: $(objects)
 main.o: main.c $(headers)
 	$(CC) -c -Wall main.c
 
+syncfiles.o: syncfiles.c
+	$(CC) -c -Wall syncfiles.c
+
 backup.o: backup.c
 	$(CC) -c -Wall backup.c
 
 date.o: date.c
 	$(CC) -c -Wall date.c
-
-syncfiles.o: syncfiles.c
-	$(CC) -c -Wall syncfiles.c
 
 clean:
 	rm program $(objects)
