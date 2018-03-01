@@ -22,6 +22,8 @@ int main(int argc, char **argv){
 	char dateBuffer[80];
 	char *date = getCurrentDate(dateBuffer);
 
+	printf("\nDate: %s", date);
+
 	int newSize = strlen(destination) + strlen(date) + 1;
 	char *destinationWithDate = (char *)malloc(newSize);
 
