@@ -9,6 +9,7 @@
 #include <setjmp.h>
 
 #include "backup.h"
+#include "syncfiles.h"
 
 void main (int argc, char **argv) {
   printf("\nProgram is running.");
@@ -43,6 +44,7 @@ void main (int argc, char **argv) {
 		}
 
 		backup();
+		syncFiles();
 	}
 
 }
