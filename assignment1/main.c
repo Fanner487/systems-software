@@ -44,8 +44,8 @@ void main (int argc, char **argv) {
 		}
 
 		// syncFiles();
-		// backup();
-		syncFiles();
+		backup();
+		// syncFiles();
 
 		// char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
 		// char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/";
