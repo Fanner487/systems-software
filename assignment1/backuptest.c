@@ -23,7 +23,7 @@ int main(int argc, char **argv){
 	char *date = getCurrentDate(dateBuffer);
 
 	int newSize = strlen(destination) + strlen(date) + 1;
-	char *destinationWithDate = (char *)mallic(newSize);
+	char *destinationWithDate = (char *)malloc(newSize);
 
 	strcpy(destinationWithDate, destination);
 	strcat(destinationWithDate, date);
