@@ -1,0 +1,6 @@
+diff 1/file1.txt 2/file1.txt
+1c1
+< asdfasdfasdf
+---
+> hello
+Only in 2: file2.txt

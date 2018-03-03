@@ -1,0 +1,17 @@
+sending incremental file list
+file1.txt
+file345.txt
+filefromintranet.txt
+filenewfromintranet.txt
+synctest.txt
+
+sent 476 bytes  received 111 bytes  1,174.00 bytes/sec
+total size is 71  speedup is 0.12
+sending incremental file list
+file1.txt
+file345.txt
+filefromintranet.txt
+filenewfromintranet.txt
+
+sent 393 bytes  received 92 bytes  970.00 bytes/sec
+total size is 61  speedup is 0.13
