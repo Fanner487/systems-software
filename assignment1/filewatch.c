@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "date.h"
+#include "log.h"
 
 void makeAuditRecord(){
 	char dateBuffer[80];
@@ -33,9 +34,13 @@ void makeAuditRecord(){
 	fp = popen(newBuffer,"r");
 	outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/auserchlog.txt", "a+");
 
+	logInfo("");
+
 	while(fgets(readbuffer, 1024,fp) != NULL){
 		fprintf(outputFile, "%s", readbuffer);
 	}
+
+	logInfo("Watch file created");
 
 	status = pclose(fp);
 }

@@ -3,7 +3,7 @@ objects=main.o backup.o filewatch.o date.o syncfiles.o permissions.o log.o
 headers=backup.h date.h syncfiles.h permissions.h log.h filewatch.h
 
 myprog: $(objects)
-	$(CC) -o daemon_process $(objects) -lm
+	$(CC) -o daemon_process $(objects) -lm -lrt
 
 main.o: main.c $(headers)
 	$(CC) -c -Wall main.c -lrt 
@@ -25,7 +25,6 @@ permissions.o: permissions.c
 
 log.o: log.c
 	$(CC) -c -Wall log.c
-
 
 clean:
 	rm program $(objects)

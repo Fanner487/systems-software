@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "date.h"
+#include "log.h"
 
 
 void backup(){
@@ -49,6 +50,8 @@ void backup(){
 	while(fgets(readbuffer, 1024,fp) != NULL){
 		fprintf(outputFile, "%s", readbuffer);
 	}
+
+	logInfo("Backup completed");
 
 	status = pclose(fp);
 

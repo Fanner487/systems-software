@@ -7,7 +7,7 @@
 #include <string.h>
 
 #include "date.h"
-
+#include "log.h"
 
 void syncFiles(){
 
@@ -31,6 +31,8 @@ void syncFiles(){
 	while(fgets(readbuffer, 1024,fp) != NULL){
 		fprintf(outputFile, "%s", readbuffer);
 	}
+
+	logInfo("Files synced to live");
 
 	status = pclose(fp);
 

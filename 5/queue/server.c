@@ -18,7 +18,7 @@ int main(){
 	queue_attributes.mq_curmsgs = 0;
 
 
-	mq = mq_open("/example_queue", O_CREAT | O_RDONLY, 0644, &queue_attributes);
+	mq = mq_open("/new_queue", O_CREAT | O_RDONLY, 0644, &queue_attributes);
 
 	do{
 
@@ -26,7 +26,7 @@ int main(){
 
 		bytes_read = mq_receive(mq, buffer, BUFFER_SIZE, NULL);
 
-		buffer[bytes_read] = '\0';
+		// buffer[bytes_read] = '\0';
 
 		if(! strncmp(buffer, "exit", strlen("exit"))){
 			terminate = 1;

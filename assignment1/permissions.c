@@ -6,6 +6,8 @@
 #include <syslog.h>
 #include <setjmp.h>
 
+#include "log.h"
+
 void setFilePermissions(char mode[]){
   int i;
   int exception_int;
@@ -18,11 +20,12 @@ void setFilePermissions(char mode[]){
 
   i = strtol(mode, 0, 8);
 
-  chmod(path, i);
-  // if (chmod(path, i) < 0){
+  // chmod(path, i);
+  if (chmod(path, i) < 0){
 
-  //   openlog("systemsoftware_log", LOG_PID|LOG_CONS, LOG_USER);
-  //   syslog(LOG_INFO, "Failed to set mode in lockfiles: %s", strerror(errno));
-  //   closelog();
-  // }
+    logError("Unable to change permissions");
+  }
+  else{
+    logInfo("Permissions changed");
+  }
 }

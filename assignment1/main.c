@@ -8,16 +8,33 @@
 #include <syslog.h>
 #include <setjmp.h>
 #include <mqueue.h>
+#include <signal.h>
 
 #include "backup.h"
 #include "syncfiles.h"
 #include "permissions.h"
 #include "log.h"
 #include "filewatch.h"
+#include "date.h"
 
 #define BUFFER_SIZE 1024
 
+void sig_handler(int sigNum){
+	if(sigNum == SIGINT){
+		logInfo("SIGNAL INTERRUPT CALLED");
+		printf("Signal interrupt\n");
+		printf("Backing up now\n");
+		setFilePermissions("1111");
+		backup();
+		syncFiles();
+		logInfo("MANUAL backup and sync");
+		setFilePermissions("0777");
+	}
+}
+
 void main (int argc, char **argv) {
+
+
 
 	char * start_filewatch = " auditctl -w /home/eamon/Documents/software/systems-software/assignment1/var/www/html/ -p rwxa";
 	
@@ -43,17 +60,17 @@ void main (int argc, char **argv) {
 
 	int pid = fork();
 
-	// mqd_t mq;
-	// struct mq_attr queue_attributes;
-	// char buffer[BUFFER_SIZE + 1];
-	// int terminate = 0;
+	mqd_t mq;
+	struct mq_attr queue_attributes;
+	char buffer[BUFFER_SIZE + 1];
+	int terminate = 0;
 
-	// queue_attributes.mq_flags = 0;
-	// queue_attributes.mq_maxmsg = 10;
-	// queue_attributes.mq_msgsize = BUFFER_SIZE;
-	// queue_attributes.mq_curmsgs = 0;
+	queue_attributes.mq_flags = 0;
+	queue_attributes.mq_maxmsg = 10;
+	queue_attributes.mq_msgsize = BUFFER_SIZE;
+	queue_attributes.mq_curmsgs = 0;
 
-	// mq = mq_open("/example_queue", O_CREAT | O_RDONLY, 0644, &queue_attributes);
+	mq = mq_open("/assignment_one_queue", O_CREAT | O_RDONLY, 0644, &queue_attributes);
 
 	// Parent
 	if(pid > 0){
@@ -78,38 +95,47 @@ void main (int argc, char **argv) {
 
 		int x;
 
-		for(x = sysconf(_SC_OPEN_MAX); x >= 0; x--){
-			close(x);
+		// for(x = sysconf(_SC_OPEN_MAX); x >= 0; x--){
+		// 	close(x);
+		// }
+
+		if(signal(SIGINT, sig_handler) == SIG_ERR){
+			printf("Something went wrong\n");
+			logInfo("ERROR: SIG_HANDLER");
 		}
 
 
-		// do{
-		// 	ssize_t bytes_read;
+		do{
+			ssize_t bytes_read;
 
-		// 	bytes_read = mq_receive(mq, buffer, BUFFER_SIZE, NULL);
+			bytes_read = mq_receive(mq, buffer, BUFFER_SIZE, NULL);
+			logInfo(buffer);
 
-		// 	buffer[bytes_read] = '\0';
+			buffer[bytes_read] = '\0';
 
-		// 	if(! strncmp(buffer, "exit", strlen("exit"))){
-		// 		terminate = 1;
-		// 	}
-		// 	else if (! strncmp(buffer, "backup", strlen("backup"))){
-		// 		setFilePermissions("1111");
-		// 		backup();
-		// 		syncFiles();
-		// 		logInfo("Back and sync completed");
-		// 		setFilePermissions("0777");
-		// 	}
+			// printf("Message: %s\nSize: %d\n", buffer, strlen(buffer));
 
-		// }
-		// while(!terminate);
+			if(! strncmp(buffer, "exit", strlen("exit"))){
+				terminate = 1;
+			}
+			else if (! strncmp(buffer, "backup", strlen("backup"))){
+				printf("Backing up now\n");
+				setFilePermissions("1111");
+				backup();
+				syncFiles();
+				logInfo("Back and sync completed");
+				setFilePermissions("0777");
+			}
 
-		setFilePermissions("1111");
-		makeAuditRecord();
-		backup();
-		syncFiles();
-		logInfo("Back and sync completed");
-		setFilePermissions("0777");
+		}
+		while(!terminate);
+
+		// setFilePermissions("1111");
+		// makeAuditRecord();
+		// backup();
+		// syncFiles();
+		// logInfo("Back and sync completed");
+		// setFilePermissions("0777");
 		
 	}
 

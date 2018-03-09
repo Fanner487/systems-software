@@ -10,7 +10,7 @@ int main(){
 	mqd_t mq;
 	char buffer[BUFFER_SIZE];
 
-	mq = mq_open("/new_queue", O_WRONLY);
+	mq = mq_open("/assignment_one_queue", O_WRONLY);
 
 	printf("Send message\n");
 
