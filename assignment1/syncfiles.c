@@ -1,3 +1,6 @@
+/*
+Syncs files between intranet and live using rsync
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -11,8 +14,8 @@
 
 void syncFiles(){
 
-	char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
-	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/";
+	// char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
+	// char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/";
 	char *command = "rsync -r /home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/ /home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/";
 
 	// execlp("rsync", "rsync", "-r", source, destination, NULL);
@@ -21,7 +24,6 @@ void syncFiles(){
 
 	FILE *fp;
 	FILE *outputFile;
-	int status;
 
 	char readbuffer[1024];
 
@@ -34,7 +36,7 @@ void syncFiles(){
 
 	logInfo("Files synced to live");
 
-	status = pclose(fp);
+	pclose(fp);
 
 }
 

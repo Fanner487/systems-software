@@ -14,14 +14,13 @@ void backup(){
 
 	printf("\nIn backup\n");
 
+	// Creates command in back up folder with the back up time appended
 	char *baseCommand = "cp -r ";
 	char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/ ";
 	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup/";
 
 	char dateBuffer[80];
 	char *date = getCurrentDate(dateBuffer);
-
-	printf("\nDate: %s", date);
 
 	int newDestinationSize = strlen(destination) + strlen(date) + 1;
 	char *destinationWithDate = (char *)malloc(newDestinationSize);
@@ -38,6 +37,7 @@ void backup(){
 	strcat(command, destinationWithDate);
 
 
+	// Takes pipe output into a file to write into a backuplog.txt to see output
 	FILE *fp;
 	FILE *outputFile;
 	int status;

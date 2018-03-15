@@ -65,29 +65,117 @@ void sig_handler(int sigNum){
 	}
 }
 
+void runScheduledBackup(int argc, char **argv){
+
+	printf("\n\n In child fork PARENT");
+
+	int hour;
+	int minute;
+
+	// If no arguments specified in command line, 11pm will be used for backup time
+	printf("\n\nargc size: %d", argc);
+	if (argc < 3){
+		hour = 23;
+		minute = 0;
+	}
+	else{
+		hour = atoi(argv[1]);
+		minute = atoi(argv[2]);
+	}
+
+	
+
+	time_t now;
+    struct tm newyear;
+    double seconds;
+    time(&now);   //get current time; same as: now = time(NULL)  
+    newyear = *localtime(&now);
+    newyear.tm_hour = hour; 
+    newyear.tm_min = minute; 
+    newyear.tm_sec = 0;			
+
+	while(1){
+		sleep(1);
+		time(&now);
+		seconds = difftime(now,mktime(&newyear));
+
+		printf("\n%.f", seconds);
+
+		if(seconds >= 0){
+
+			doBackup();
+
+			newyear.tm_mday += 1;
+		}
+	}
+}
+
+void runMessageQueue(){
+	mqd_t mq;
+	struct mq_attr queue_attributes;
+	char buffer[BUFFER_SIZE + 1];
+	int terminate = 0;
+
+	queue_attributes.mq_flags = 0;
+	queue_attributes.mq_maxmsg = 10;
+	queue_attributes.mq_msgsize = BUFFER_SIZE;
+	queue_attributes.mq_curmsgs = 0;
+
+	mq = mq_open("/assignment_one_queue", O_CREAT | O_RDONLY, 0644, &queue_attributes);
+
+	// Interruption handler
+	if(signal(SIGINT, sig_handler) == SIG_ERR){
+		printf("Something went wrong\n");
+		logInfo("ERROR: SIG_HANDLER");
+	}
+
+
+	do{
+		ssize_t bytes_read;
+
+		bytes_read = mq_receive(mq, buffer, BUFFER_SIZE, NULL);
+		logInfo(buffer);
+
+		buffer[bytes_read] = '\0';
+
+		// printf("Message: %s\nSize: %d\n", buffer, strlen(buffer));
+
+		if(! strncmp(buffer, "exit", strlen("exit"))){
+			terminate = 1;
+			printf("\n\nchild exit received");
+			logInfo("Exited Daemon");
+		}
+		else if (! strncmp(buffer, "backup", strlen("backup"))){
+			doBackup();
+		}
+	}
+	while(terminate < 1);
+
+	printf("\nExiting child");
+}
+
 
 
 int main (int argc, char **argv) {
 
-	char * start_filewatch = " auditctl -w /home/eamon/Documents/software/systems-software/assignment1/var/www/html/ -p rwxa";
+	// char * start_filewatch = " auditctl -w /home/eamon/Documents/software/systems-software/assignment1/var/www/html/ -p rwxa";
 	
 
-	FILE *fp;
-	FILE *outputFile;
-	int status;
+	// FILE *fp;
+	// FILE *outputFile;
 
-	char readbuffer[1024];
+	// char readbuffer[1024];
 
-	fp = popen(start_filewatch,"r");
-	outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/auditlog.txt", "a+");
+	// fp = popen(start_filewatch,"r");
+	// outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/auditlog.txt", "a+");
 
-	while(fgets(readbuffer, 1024,fp) != NULL){
-		fprintf(outputFile, "%s", readbuffer);
-	}
+	// while(fgets(readbuffer, 1024,fp) != NULL){
+	// 	fprintf(outputFile, "%s", readbuffer);
+	// }
 
-	status = pclose(fp);
+	// pclose(fp);
 
-
+	startFileWatch();
 
 	// printf("\nProgram is running.");
 
@@ -112,46 +200,48 @@ int main (int argc, char **argv) {
 
 		if(childForkPid > 0){
 
-			printf("\n\n In child fork PARENT");
+			runScheduledBackup(argc, argv);
 
-			int hour;
-			int minute;
+			// printf("\n\n In child fork PARENT");
 
-			// If no arguments specified in command line, 11pm will be used for backup time
-			if (argc < 3){
-				hour = 23;
-				minute = 0;
-			}
-			else{
-				hour = atoi(argv[1]);
-				minute = atoi(argv[2]);
-			}
+			// int hour;
+			// int minute;
+
+			// // If no arguments specified in command line, 11pm will be used for backup time
+			// if (argc < 3){
+			// 	hour = 23;
+			// 	minute = 0;
+			// }
+			// else{
+			// 	hour = atoi(argv[1]);
+			// 	minute = atoi(argv[2]);
+			// }
 
 			
 
-			time_t now;
-		    struct tm newyear;
-		    double seconds;
-		    time(&now);  /* get current time; same as: now = time(NULL)  */
-		    newyear = *localtime(&now);
-		    newyear.tm_hour = hour; 
-		    newyear.tm_min = minute; 
-		    newyear.tm_sec = 0;			
+			// time_t now;
+		 //    struct tm newyear;
+		 //    double seconds;
+		 //    time(&now);   //get current time; same as: now = time(NULL)  
+		 //    newyear = *localtime(&now);
+		 //    newyear.tm_hour = hour; 
+		 //    newyear.tm_min = minute; 
+		 //    newyear.tm_sec = 0;			
 
-			while(1){
-				sleep(1);
-				time(&now);
-				seconds = difftime(now,mktime(&newyear));
+			// while(1){
+			// 	sleep(1);
+			// 	time(&now);
+			// 	seconds = difftime(now,mktime(&newyear));
 
-				printf("\n%.f", seconds);
+			// 	printf("\n%.f", seconds);
 
-				if(seconds >= 0){
+			// 	if(seconds >= 0){
 
-					doBackup();
+			// 		doBackup();
 
-					newyear.tm_mday += 1;
-				}
-			}
+			// 		newyear.tm_mday += 1;
+			// 	}
+			// }
 
 
 			return 0;
@@ -162,47 +252,49 @@ int main (int argc, char **argv) {
 
 			printf("\n\n In child fork CHILD");
 
-			mqd_t mq;
-			struct mq_attr queue_attributes;
-			char buffer[BUFFER_SIZE + 1];
-			int terminate = 0;
+			runMessageQueue();
 
-			queue_attributes.mq_flags = 0;
-			queue_attributes.mq_maxmsg = 10;
-			queue_attributes.mq_msgsize = BUFFER_SIZE;
-			queue_attributes.mq_curmsgs = 0;
+			// mqd_t mq;
+			// struct mq_attr queue_attributes;
+			// char buffer[BUFFER_SIZE + 1];
+			// int terminate = 0;
 
-			mq = mq_open("/assignment_one_queue", O_CREAT | O_RDONLY, 0644, &queue_attributes);
+			// queue_attributes.mq_flags = 0;
+			// queue_attributes.mq_maxmsg = 10;
+			// queue_attributes.mq_msgsize = BUFFER_SIZE;
+			// queue_attributes.mq_curmsgs = 0;
 
-			// Interruption handler
-			if(signal(SIGINT, sig_handler) == SIG_ERR){
-				printf("Something went wrong\n");
-				logInfo("ERROR: SIG_HANDLER");
-			}
+			// mq = mq_open("/assignment_one_queue", O_CREAT | O_RDONLY, 0644, &queue_attributes);
+
+			// // Interruption handler
+			// if(signal(SIGINT, sig_handler) == SIG_ERR){
+			// 	printf("Something went wrong\n");
+			// 	logInfo("ERROR: SIG_HANDLER");
+			// }
 
 
-			do{
-				ssize_t bytes_read;
+			// do{
+			// 	ssize_t bytes_read;
 
-				bytes_read = mq_receive(mq, buffer, BUFFER_SIZE, NULL);
-				logInfo(buffer);
+			// 	bytes_read = mq_receive(mq, buffer, BUFFER_SIZE, NULL);
+			// 	logInfo(buffer);
 
-				buffer[bytes_read] = '\0';
+			// 	buffer[bytes_read] = '\0';
 
-				// printf("Message: %s\nSize: %d\n", buffer, strlen(buffer));
+			// 	// printf("Message: %s\nSize: %d\n", buffer, strlen(buffer));
 
-				if(! strncmp(buffer, "exit", strlen("exit"))){
-					terminate = 1;
-					printf("\n\nchild exit received");
-					logInfo("Exited Daemon");
-				}
-				else if (! strncmp(buffer, "backup", strlen("backup"))){
-					doBackup();
-				}
-			}
-			while(terminate < 1);
+			// 	if(! strncmp(buffer, "exit", strlen("exit"))){
+			// 		terminate = 1;
+			// 		printf("\n\nchild exit received");
+			// 		logInfo("Exited Daemon");
+			// 	}
+			// 	else if (! strncmp(buffer, "backup", strlen("backup"))){
+			// 		doBackup();
+			// 	}
+			// }
+			// while(terminate < 1);
 
-			printf("\nExiting child");
+			// printf("\nExiting child");
 
 			return 0;
 		}

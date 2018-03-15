@@ -1,3 +1,8 @@
+/*
+Allows user to explictly instruct the daemon to run the backup
+'backup' is the command
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

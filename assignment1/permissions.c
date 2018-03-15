@@ -1,3 +1,7 @@
+/*
+Changes the permissions of /var/www/ between 777 and 744
+chmod() in C doesn't allow recursive chmodding (-R) flag. Need to do it manually
+*/
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -10,7 +14,6 @@
 
 void setFilePermissions(char mode[]){
     int i;
-    int exception_int;
 
     struct stat st;
 
@@ -36,7 +39,6 @@ void lockSite(){
 
     FILE *fp;
     FILE *outputFile;
-    int status;
     char readbuffer[1024];
 
     fp = popen(command, "r");
@@ -48,7 +50,7 @@ void lockSite(){
 
     logInfo("Lock site");
 
-    status = pclose(fp);
+    pclose(fp);
 }
 
 void unlockSite(){
@@ -57,7 +59,6 @@ void unlockSite(){
 
     FILE *fp;
     FILE *outputFile;
-    int status;
     char readbuffer[1024];
 
     fp = popen(command, "r");
@@ -69,6 +70,6 @@ void unlockSite(){
 
     logInfo("Unlock site");
 
-    status = pclose(fp);
+    pclose(fp);
 
 }
