@@ -34,8 +34,6 @@ void makeAuditRecord(){
 	fp = popen(newBuffer,"r");
 	outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/auserchlog.txt", "a+");
 
-	logInfo("");
-
 	while(fgets(readbuffer, 1024,fp) != NULL){
 		fprintf(outputFile, "%s", readbuffer);
 	}

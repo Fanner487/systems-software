@@ -36,7 +36,6 @@ void backup(){
 	strcpy(command, baseCommand);
 	strcat(command, source);
 	strcat(command, destinationWithDate);
-	// execlp("cp", "cp", "-r", source, destinationWithDate, NULL);
 
 
 	FILE *fp;
