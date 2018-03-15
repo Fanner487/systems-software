@@ -15,7 +15,7 @@ void makeAuditRecord(){
 	char dateBuffer[80];
 
 	char *date = getCurrentDate(dateBuffer);
-	char * pathBeginning = "ausearch -f /home/eamon/Documents/software/systems-software/assignment1/var/www/html/ > /home/eamon/Documents/software/systems-software/assignment1/changelogs/";
+	char * pathBeginning = "ausearch -i -ts today -f /home/eamon/Documents/software/systems-software/assignment1/var/www/html/ > /home/eamon/Documents/software/systems-software/assignment1/changelogs/";
 	char * fileType = ".txt";
 
 	int newSize = strlen(pathBeginning) + strlen(date) + strlen(fileType) + 1;

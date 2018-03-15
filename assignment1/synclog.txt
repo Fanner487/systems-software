@@ -15,3 +15,4 @@ filenewfromintranet.txt
 
 sent 393 bytes  received 92 bytes  970.00 bytes/sec
 total size is 61  speedup is 0.13
+Argument is required for -f

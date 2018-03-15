@@ -9,23 +9,66 @@
 #include "log.h"
 
 void setFilePermissions(char mode[]){
-  int i;
-  int exception_int;
+    int i;
+    int exception_int;
 
-  struct stat st;
+    struct stat st;
 
-  char path[100] = "/home/eamon/Documents/software/systems-software/assignment1/var/www/";
+    char path[100] = "/home/eamon/Documents/software/systems-software/assignment1/var/www/";
 
-  stat(path, &st);
+    stat(path, &st);
 
-  i = strtol(mode, 0, 8);
+    i = strtol(mode, 0, 8);
 
-  // chmod(path, i);
-  if (chmod(path, i) < 0){
+    // chmod(path, i);
+    if (chmod(path, i) < 0){
 
     logError("Unable to change permissions");
-  }
-  else{
+    }
+    else{
     logInfo("Permissions changed");
-  }
+}
+}
+
+void lockSite(){
+
+    char *command = "chmod -R 744 /home/eamon/Documents/software/systems-software/assignment1/var/www/html/";
+
+    FILE *fp;
+    FILE *outputFile;
+    int status;
+    char readbuffer[1024];
+
+    fp = popen(command, "r");
+    outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/lockfiles.txt", "a+");
+
+    while(fgets(readbuffer, 1024,fp) != NULL){
+        fprintf(outputFile, "%s", readbuffer);
+    }
+
+    logInfo("Lock site");
+
+    status = pclose(fp);
+}
+
+void unlockSite(){
+
+    char *command = "chmod -R 777 /home/eamon/Documents/software/systems-software/assignment1/var/www/html/";
+
+    FILE *fp;
+    FILE *outputFile;
+    int status;
+    char readbuffer[1024];
+
+    fp = popen(command, "r");
+    outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/unlockfiles.txt", "a+");
+
+    while(fgets(readbuffer, 1024,fp) != NULL){
+        fprintf(outputFile, "%s", readbuffer);
+    }
+
+    logInfo("Unlock site");
+
+    status = pclose(fp);
+
 }
