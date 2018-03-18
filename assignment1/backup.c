@@ -3,20 +3,17 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <math.h>
 #include <string.h>
 
 #include "date.h"
 #include "log.h"
+#include "messagequeue.h"
 
 
 void backup(){
 
-	printf("\nIn backup\n");
-
 	// Creates command in back up folder with the back up time appended
-	char *baseCommand = "cp -r ";
-	char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/ ";
+	char *source = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
 	char *destination = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup/";
 
 	char dateBuffer[80];
@@ -28,31 +25,48 @@ void backup(){
 	strcpy(destinationWithDate, destination);
 	strcat(destinationWithDate, date);
 
-
-	int commandSize = strlen(baseCommand) + strlen(source) + strlen(destinationWithDate) + 1;
-	char *command = (char *)malloc(commandSize);
-
-	strcpy(command, baseCommand);
-	strcat(command, source);
-	strcat(command, destinationWithDate);
-
-
-	// Takes pipe output into a file to write into a backuplog.txt to see output
-	FILE *fp;
-	FILE *outputFile;
+	pid_t cpid, w;
 	int status;
-	char readbuffer[1024];
 
-	fp = popen(command, "r");
-	outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/backuplog.txt", "a+");
-
-	while(fgets(readbuffer, 1024,fp) != NULL){
-		fprintf(outputFile, "%s", readbuffer);
+	cpid = fork();
+	if (cpid == -1) {
+	    perror("fork");
+	    exit(EXIT_FAILURE);
 	}
 
-	logInfo("Backup completed");
+	if (cpid == 0) {
 
-	status = pclose(fp);
+		// Command execution in here
+	    printf("Child PID is %ld\n", (long) getpid());
+	    
+		execlp("cp", "cp", "-r", source, destinationWithDate, NULL);
 
-	// return 0;
+	} 
+	else { 
+		
+		
+		// Waits for the child process to exit and return its status code and sends
+        // an appropriate info/error message back to the daemon to log
+	    do {
+
+	        w = waitpid(cpid, &status, WUNTRACED | WCONTINUED);
+	        if (w == -1) {
+				perror("waitpid");
+				exit(EXIT_FAILURE);
+			}
+
+			if (WIFEXITED(status)) {
+				
+				printf("exited, status=%d\n", WEXITSTATUS(status));
+	        } 
+
+	        if(status == 0){
+	        	printf("Exited correctly\n");
+	        	sendQueueMessage("INFO: Backup of files complete");
+	        }
+	        else{
+	        	sendQueueMessage("ERROR: BACKUP");
+	        }
+	    } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+	}
 }

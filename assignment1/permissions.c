@@ -4,72 +4,162 @@ chmod() in C doesn't allow recursive chmodding (-R) flag. Need to do it manually
 */
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include <syslog.h>
-#include <setjmp.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
-#include "log.h"
-
-void setFilePermissions(char mode[]){
-    int i;
-
-    struct stat st;
-
-    char path[100] = "/home/eamon/Documents/software/systems-software/assignment1/var/www/";
-
-    stat(path, &st);
-
-    i = strtol(mode, 0, 8);
-
-    // chmod(path, i);
-    if (chmod(path, i) < 0){
-
-    logError("Unable to change permissions");
-    }
-    else{
-    logInfo("Permissions changed");
-}
-}
+#include "messagequeue.h"
 
 void lockSite(){
 
-    char *command = "chmod -R 744 /home/eamon/Documents/software/systems-software/assignment1/var/www/html/";
+    char *directory = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
 
-    FILE *fp;
-    FILE *outputFile;
-    char readbuffer[1024];
+    pid_t cpid, w;
+    int status;
 
-    fp = popen(command, "r");
-    outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/lockfiles.txt", "a+");
-
-    while(fgets(readbuffer, 1024,fp) != NULL){
-        fprintf(outputFile, "%s", readbuffer);
+    cpid = fork();
+    if (cpid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
     }
 
-    logInfo("Lock site");
+    if (cpid == 0) {    
 
-    pclose(fp);
+        // Command execution in here
+        
+        printf("Child PID is %ld\n", (long) getpid());
+        
+        execlp("chmod", "chmod", "-R", "555", directory, NULL);
+
+    } 
+    else { 
+        /* Code executed by parent */
+        do {
+
+            // Waits for the child process to exit and return its status code and sends
+            // an appropriate info/error message back to the daemon to log
+            
+            w = waitpid(cpid, &status, WUNTRACED | WCONTINUED);
+            
+            if (w == -1) {
+                perror("waitpid");
+                exit(EXIT_FAILURE);
+            }
+
+            if (WIFEXITED(status)) {
+                
+                printf("exited, status=%d\n", WEXITSTATUS(status));
+            }
+
+            if(status == 0){
+                printf("Exited correctly\n");
+                sendQueueMessage("INFO: Locked site");
+            }
+            else{
+                sendQueueMessage("ERROR: LOCKFILES");
+            }
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+    }
 }
 
 void unlockSite(){
 
-    char *command = "chmod -R 777 /home/eamon/Documents/software/systems-software/assignment1/var/www/html/";
+    char *directory = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/intranet/";
 
-    FILE *fp;
-    FILE *outputFile;
-    char readbuffer[1024];
+    pid_t cpid, w;
+    int status;
 
-    fp = popen(command, "r");
-    outputFile = fopen("/home/eamon/Documents/software/systems-software/assignment1/unlockfiles.txt", "a+");
-
-    while(fgets(readbuffer, 1024,fp) != NULL){
-        fprintf(outputFile, "%s", readbuffer);
+    cpid = fork();
+    if (cpid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
     }
 
-    logInfo("Unlock site");
+    if (cpid == 0) {            /* Code executed by child */
+        printf("Child PID is %ld\n", (long) getpid());
+        
+        execlp("chmod", "chmod", "-R", "777", directory, NULL);
 
-    pclose(fp);
+    } 
+    else { 
+        /* Code executed by parent */
+        do {
 
+            w = waitpid(cpid, &status, WUNTRACED | WCONTINUED);
+            if (w == -1) {
+                perror("waitpid");
+                exit(EXIT_FAILURE);
+            }
+
+            if (WIFEXITED(status)) {
+                
+                printf("exited, status=%d\n", WEXITSTATUS(status));
+            }
+
+            if(status == 0){
+                printf("Exited correctly\n");
+                sendQueueMessage("INFO: Unlocked site");
+            }
+            else{
+                sendQueueMessage("ERROR: UNLOCK FILES");
+            }
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+    }
+}
+
+void setFolderPermissions(){
+
+    char *directoryLive = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/live/";
+    char *directoryBackup = "/home/eamon/Documents/software/systems-software/assignment1/var/www/html/backup/";
+
+    pid_t cpid, w;
+    int status;
+
+    cpid = fork();
+    if (cpid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+
+    if (cpid == 0) {            /* Code executed by child */
+        printf("Child PID is %ld\n", (long) getpid());
+        
+        execlp("chmod", "chmod", "-R", "555", directoryLive, directoryBackup ,NULL);
+
+    } 
+    else { 
+        /* Code executed by parent */
+        do {
+
+            w = waitpid(cpid, &status, WUNTRACED | WCONTINUED);
+            if (w == -1) {
+                perror("waitpid");
+                exit(EXIT_FAILURE);
+            }
+
+            if (WIFEXITED(status)) {
+                
+                printf("exited, status=%d\n", WEXITSTATUS(status));
+            } 
+            else if (WIFSIGNALED(status)) {
+                
+                printf("killed by signal %d\n", WTERMSIG(status));
+            } else if (WIFSTOPPED(status)) {
+                
+                printf("stopped by signal %d\n", WSTOPSIG(status));
+            } else if (WIFCONTINUED(status)) {
+
+                printf("continued\n");
+            }
+
+            if(status == 0){
+                printf("Exited correctly\n");
+                sendQueueMessage("INFO: Set backup and live permissions");
+            }
+            else{
+                sendQueueMessage("ERROR: BACKUP AND LIVE PERMISSIONS");
+            }
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+    }
 }

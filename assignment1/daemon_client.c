@@ -10,29 +10,15 @@ Allows user to explictly instruct the daemon to run the backup
 
 #define BUFFER_SIZE 1024
 
-int main(){
+int main(int argc, char **argv){
 
 	mqd_t mq;
 	char buffer[BUFFER_SIZE];
+	char * message = argv[1];
 
 	mq = mq_open("/assignment_one_queue", O_WRONLY);
 
-	printf("Send message\n");
-
-	do{
-
-		printf(">>");
-		fflush(stdout);
-
-		memset(buffer, 0, BUFFER_SIZE);
-
-		fgets(buffer, BUFFER_SIZE, stdin);
-
-		printf("%s\n", buffer);
-
-		mq_send(mq, buffer, BUFFER_SIZE, 0);
-	}
-	while(strncmp(buffer, "exit", strlen("exit")));
+	mq_send(mq, message, BUFFER_SIZE, 0);
 
 	mq_close(mq);
 

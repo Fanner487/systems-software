@@ -1,6 +1,6 @@
 CC=gcc -g 
-objects=main.o backup.o filewatch.o date.o syncfiles.o permissions.o log.o 
-headers=backup.h date.h syncfiles.h permissions.h log.h filewatch.h
+objects=main.o backup.o fileaudit.o date.o syncfiles.o permissions.o log.o messagequeue.o
+headers=backup.h date.h syncfiles.h permissions.h log.h fileaudit.h messagequeue.h
 
 myprog: $(objects)
 	$(CC) -o daemon_process $(objects) -lm -lrt
@@ -14,8 +14,8 @@ syncfiles.o: syncfiles.c
 backup.o: backup.c
 	$(CC) -c -Wall backup.c
 
-filewatch.o: filewatch.c
-	$(CC) -c -Wall filewatch.c
+fileaudit.o: fileaudit.c
+	$(CC) -c -Wall fileaudit.c
 
 date.o: date.c
 	$(CC) -c -Wall date.c
@@ -25,6 +25,9 @@ permissions.o: permissions.c
 
 log.o: log.c
 	$(CC) -c -Wall log.c
+
+messagequeue.o: messagequeue.c
+	$(CC) -c -Wall messagequeue.c -lrt
 
 clean:
 	rm program $(objects)
