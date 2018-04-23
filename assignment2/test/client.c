@@ -1,41 +1,110 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+
+void displayMessage(char *message){
+
+	printf("\n--------------\n");
+	printf("%s\n", message);
+	printf("--------------\n\n");
+}
 
 void getCredentials(char *message){
 
 	char username[500];
 	char password[500];
-	char folder[500];
-	char file[500];
 	char output[500];
+
+	displayMessage("Login");
 
 	printf("Enter username: ");
 	scanf("%s", username);
-	printf("\n");
-
 	printf("Enter password: ");
 	scanf("%s", password);
-	printf("\n");
-
-	printf("Enter file: ");
-	scanf("%s", file);
-	printf("\n");
-
-	printf("Enter destination folder: ");
-	scanf("%s", folder);
-	printf("\n");
-
 
 	strcpy(message, username);
 	strcat(message, " ");
 	strcat(message, password);
-	strcat(message, " ");
-	strcat(message, file);
+}
+
+void sendFile(int SID, char *filePath){
+	
+	char fileBuffer[512];
+	FILE *fileOpen;
+	fileOpen = fopen(filePath, "r");
+
+	bzero(fileBuffer, 512);
+
+	while((blockSize = fread(fileBuffer, sizeof(char), 512, fileOpen)) > 0){
+		
+		printf("Data sent %d = %d bytes\n", i, blockSize);
+		if(send(SID, fileBuffer, blockSize, 0) < 0){
+			exit(1);
+		}
+
+		bzero(fileBuffer, 512);
+		i++;
+	}
+}
+
+void getFilePathAndFolder(char *message, char *filePath){
+
+	char *baseDirectory = "/home/eamon/Documents/software/systems-software/assignment2/test/clientfiles/";
+	char folder[500];
+	char file[500];
+
+	printf("Enter file to backup: ");
+	scanf("%s", &file);
+
+	// Copies file path
+	strcpy(filePath, baseDirectory);
+	strcat(filePath, file);
+
+	printf("%s\n", filePath);
+
+	// Checks to see if file exists
+	if(access(filePath, 0) != 0){
+	
+		displayMessage("File does not exist");
+		exit(1);
+	}
+
+	printf("\n");
+	printf("Enter destination folder\n");
+	printf("(offers, marketing, sales, promotions): ");
+	scanf("%s", folder);
+
+	strcpy(message, file);
 	strcat(message, " ");
 	strcat(message, folder);
+}
+
+void handleResponse(int SID){
+
+	char serverMessage[500];
+
+	if(recv(SID, serverMessage, 500, 0) < 0){
+		printf("IO error\n");
+		// break;
+	}
+
+	if(strcmp(serverMessage, "user authenticated") == 0){
+		displayMessage("User authenticated. Connected to server");
+	}
+	else if(strcmp(serverMessage, "START_TRANSFER") == 0){
+		displayMessage("Starting transfer")
+	}
+	else if(strcmp(serverMessage, "BACKUP_COMPLETE") == 0){
+		displayMessage("Backup complete")
+	}
+	else{
+		displayMessage(serverMessage);
+		return 1;
+	}
 }
 
 int main(int argc, char *argv[]){
@@ -44,13 +113,7 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in server;
 	char clientMessage[500];
 	char serverMessage[500];
-	char destinationFolder[500];
-
-	char message[500];
-
-	getCredentials(&message);	
-
-	printf("\n%s\n", message);
+	char destinationFolder[500];	
 
 	SID = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -58,7 +121,7 @@ int main(int argc, char *argv[]){
 		printf("error creating socket\n");
 	}
 	else{
-		printf("socket created\n");
+		printf("socket created\n\n");
 	}
 
 	server.sin_port = htons(8081);
@@ -70,61 +133,45 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 
-	printf("Connected to server");
-
-	char *filename = "/home/eamon/Documents/software/systems-software/assignment2/test/clientfiles/file.txt";
-
-	char fileBuffer[512];
-
-	printf("Sending file to server\n");
-
-	FILE *fileOpen = fopen(filename, "r");
-
-	bzero(fileBuffer, 512);
-
 	int blockSize, i = 0;
 
-	if(send(SID, message, strlen(message), 0) < 0){
+	char loginCredentials[500];
+
+	getCredentials(&loginCredentials);	
+
+
+	if(send(SID, loginCredentials, strlen(loginCredentials), 0) < 0){
 		printf("send failed\n");
 		return 1;
 	}
 
-	// if(recv(SID, serverMessage, 500, 0) < 0){
-	// 	printf("IO error\n");
+	memset(serverMessage, 0, 500);
 
-	// 	// break;
-	// }
+	handleResponse(SID);
 
-	// while((blockSize = fread(fileBuffer, sizeof(char), 512, fileOpen)) > 0){
-	// 	printf("Data sent %d = %d\n", i, blockSize);
+	char fileFolderMessage[500];
+	char filePath[500];
 
-	// 	if(send(SID, fileBuffer, blockSize, 0) < 0){
-	// 		exit(1);
-	// 	}
+	getFilePathAndFolder(&fileFolderMessage, &filePath);	
 
-	// 	bzero(fileBuffer, 512);
-	// 	i++;
-	// }
+	if(send(SID, fileFolderMessage, strlen(fileFolderMessage), 0) < 0){
+		printf("send failed\n");
+		return 1;
+	}
 
-	// while(1){
+	memset(serverMessage, 0, 500);
 
-	// 	// printf("Enter message: \n");
-	// 	// scanf("%s", clientMessage);
+	if(recv(SID, serverMessage, 500, 0) < 0){
+		printf("IO error\n");
+		// break;
+	}
 
-	// 	// if(send(SID, clientMessage, strlen(clientMessage), 0) < 0){
-	// 	// 	printf("send failed\n");
-	// 	// 	return 1;
-	// 	// }
+	// Handle response for START_TRANSFER
+	handleResponse(SID);
 
-	// 	if(recv(SID, serverMessage, 500, 0) < 0){
-	// 		printf("IO error\n");
+	sendFile(SID, filePath);
 
-	// 		break;
-	// 	}
-
-	// 	printf("\nServer sent: %s", serverMessage);
-		
-	// }
+	handleResponse(SID);
 
 	close(SID);
 	return 0;

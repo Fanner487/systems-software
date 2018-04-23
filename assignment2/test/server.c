@@ -1,9 +1,111 @@
+#include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <stdio.h>
+
+
+// void transfer()
+
+
+void *clientHandler(void *cs){
+
+	printf("In client handler\n");
+	char fileBuffer[512];
+	char destinationFolder[512];
+
+	int clientSocket = *(int *) cs;
+
+	bzero(fileBuffer, 512);
+	bzero(destinationFolder, 512);
+
+	char username[500];
+	char password[500];
+	char file[500];
+	char folder[500];
+
+	printf("Ready to receive\n");
+
+	recv(clientSocket, destinationFolder, 512, 0);
+	printf("Received message: %s\n", destinationFolder);
+	sscanf(destinationFolder, "%s %s", username, password);
+		// printf("username: %s\nPassword: %s\n", u, p);
+
+	printf("%s\n", username);
+	printf("%s\n", password);
+
+
+	if(authenticate(username, password) == 1){
+		printf("user is authenticated\n");
+		write(clientSocket, "user authenticated", strlen("user authenticated") + 1);
+
+	}
+	else{
+		printf("not a valid user\n");
+		write(clientSocket, "Login denied", strlen("not a valid user") + 1);
+		return 1;
+	}
+
+	recv(clientSocket, destinationFolder, 512, 0);
+	sscanf(destinationFolder, "%s %s", file, folder);
+
+	printf("%s\n", file);
+	printf("%s\n", folder);
+
+	if(
+		strcmp(folder, "marketing") != 0 &&
+		strcmp(folder, "offers") != 0 &&
+		strcmp(folder, "sales") != 0 &&
+		strcmp(folder, "promotions") != 0 ){
+
+		write(clientSocket, "Not a valid folder option", strlen("Not a valid folder option") + 1);
+		return 1;
+	}
+
+	
+	bzero(destinationFolder, 512);
+
+	char *baseDirectory = "/home/eamon/Documents/software/systems-software/assignment2/test/serverfiles/";
+	char outputFilePath[500];
+
+	strcpy(outputFilePath, baseDirectory);
+	strcat(outputFilePath, folder);
+	strcat(outputFilePath, "/");
+	strcat(outputFilePath, file);
+
+	FILE *outputFile;
+
+	outputFile = fopen(outputFilePath, "w");
+
+	int blockSize = 0;
+
+	write(clientSocket, "START_TRANSFER", strlen("START_TRANSFER") + 1);
+	
+	// recv(cs?, fileBuffer, 512, 0);
+
+	// printf("%s\n", fileBuffer);
+	while((blockSize = recv(clientSocket, fileBuffer, 512, 0)) > 0)
+	{
+	
+		printf("Data received. %d\n", blockSize);
+		int write_sz = fwrite(fileBuffer, sizeof(char), blockSize, outputFile);
+		bzero(destinationFolder, 512);
+
+		memset(fileBuffer, 0, sizeof(fileBuffer));
+
+		if(write_sz == 0 || write_sz != 512){
+			break;
+		}
+		// break;
+	}
+
+	fclose(outputFile);
+
+	write(clientSocket, "BACKUP_COMPLETE", strlen("BACKUP_COMPLETE") + 1);
+}
 
 int authenticate(char *username, char *password){
 
@@ -52,8 +154,7 @@ int main(int argc, char *argv[])
 	struct sockaddr_in server, client;
 	char message[500];
 
-	char file_buffer[512];
-	char destinationFolder[512];
+	
 	char* file_name = "/home/eamon/Documents/software/systems-software/assignment2/test/serverfiles/file.txt";
 
 	//Creating socket
@@ -93,100 +194,27 @@ int main(int argc, char *argv[])
 	printf("Waiting incoming connection form client>>\n");
 	consize = sizeof(struct sockaddr_in);
 
-	cs = accept(s, (struct sockaddr *) &client, (socklen_t*) &consize);
-
-	if(cs < 0)
-	{
-		perror("Cant establish connection\n");
-		return 1;
-	}
-
-	else
-	{
-		printf("Connection form client accepted\n");
-	}
-
-	FILE *file_open = fopen(file_name, "w");
-
-	if(file_open == NULL)
-		printf("File %s Cannot be opened file on server.\n", file_name);
-
-	else{
-		bzero(file_buffer, 512);
-		bzero(destinationFolder, 512);
-		int block_size = 0;
-		int i = 0;
-
-		char username[500];
-		char password[500];
-		char file[500];
-		char folder[500];
-
-		while((block_size = recv(cs, destinationFolder, 512, 0)) > 0)
+	while(cs = accept(s, (struct sockaddr *) &client, (socklen_t*) &consize)){
+			if(cs < 0)
 		{
-
-			sscanf(destinationFolder, "%s %s %s %s", username, password, file, folder);
-				// printf("username: %s\nPassword: %s\n", u, p);
-
-			printf("\n%s", username);
-			printf("\n%s", password);
-			printf("\n%s", file);
-			printf("\n%s", folder);
-			
-			// int write_sz = fwrite(file_buffer, sizeof(char), block_size, file_open);
-			bzero(destinationFolder, 512);
-
-			
-			// break;
-		}
-
-		if(authenticate(username, password) == 1){
-			printf("user is authenticated\n");
-
-		}
-		else{
-			printf("not a valid user\n");
+			perror("Cant establish connection\n");
 			return 1;
 		}
-		
-
-
-		// if(send(cs, "hello", strlen("hello"), 0) < 0){
-		// 		printf("send failed\n");
-		// 		return 1;
-		// 	}
-
-		printf("broke from first while\n");
-
-		// while(1){
-		// 	printf("yoyoyo\n");
-		// }
-	
-		while((block_size = recv(cs, file_buffer, 512, 0)) > 0)
+		else
 		{
-			printf("inside 2nd while\n");
+			printf("Connection form client accepted\n");
 
-			printf("Data received %d = %d \n", i, block_size);
-			int write_sz = fwrite(file_buffer, sizeof(char), block_size, file_open);
-			bzero(file_buffer, 512);
-			i++;
+			pthread_t thread;
+
+			// Allocates memory for client socket
+			int *clientSocket = malloc(200);
+			*clientSocket = cs;
+
+			// int clientSocket = cs;
+			if(pthread_create(&thread, NULL, clientHandler, (void *) clientSocket) < 0){
+				perror("Failed to create thread for client");
+			}
 		}
-
-	}
-
-	printf("Transfer Complete!\n");
-	fclose(file_open);
-
-	if(READSIZE == 0)
-	{
-		puts("Client disconnected\n");
-		fflush(stdout);
-	}
-
-	else if(READSIZE == -1)
-	{
-
-		perror("read error\n");
 	}
 
 	return 0;
